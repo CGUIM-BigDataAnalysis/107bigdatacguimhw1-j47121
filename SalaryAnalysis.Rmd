@@ -1,7 +1,7 @@
 ---
 title: "107-2 大數據分析方法 作業一"
 output: github_document
-author: put your name here
+author: 游佳容
 ---
 
 搞不清楚各行各業的薪資差異嗎? 念研究所到底對第一份工作的薪資影響有多大? CP值高嗎? 透過分析**初任人員平均經常性薪資**- [開放資料連結](https://data.gov.tw/dataset/6647)，可初步了解台灣近幾年各行各業、各學歷的起薪。
@@ -10,25 +10,46 @@ author: put your name here
 
 ### 資料匯入與處理
 ```{r dataload}
-library(jsonlite)
+library(readr)
 library(dplyr)
-#fromjson()
-#inner_join()
+X103_EducationLevel <- read_csv("C:/Users/ASUS/Desktop/Big Data Analytical Methods/103_EducationLevel.csv")
+X104_EducationLevel <- read_csv("C:/Users/ASUS/Desktop/Big Data Analytical Methods/104_EducationLevel.csv")
+X105_EducationLevel <- read_csv("C:/Users/ASUS/Desktop/Big Data Analytical Methods/105_EducationLevel.csv")
+X106_EducationLevel <- read_csv("C:/Users/ASUS/Desktop/Big Data Analytical Methods/106_EducationLevel.csv")
+df103106 <- data.frame(Career = X103_EducationLevel$Career,
+                       Year3 = "103",
+                       UniversitySalary103 = X103_EducationLevel$UniversitySalary,
+                       Year6 = "106",
+                       UniversitySalary106 = X106_EducationLevel$UniversitySalary,
+                       stringsAsFactors = F)
 ```
 
 ### 106年度薪資較103年度薪資高的職業有哪些? 
 ```{r compare103106}
-#這是R Code Chunk
+df103106$UniversitySalary103 <- as.numeric(gsub("—|…","",df103106$UniversitySalary103))
+df103106$UniversitySalary106 <- as.numeric(gsub("—|…","",df103106$UniversitySalary106))
+
+df103106$UniRate <- df103106$UniversitySalary106/df103106$UniversitySalary103
+df103106 <- df103106[complete.cases(df103106[,6]),]
+
+df103106 <- arrange(df103106,desc(UniRate))
+knitr::kable(head(df103106,10))
 ```
+
+- 結果說明：  
+從結果看來**增加比例最高的為其他服務業-技術員及助理專業人員**，接下來是增加幅度差不多的住宿及餐飲業-服務及銷售工作人員以及用水供應及污染整治業-技術員及助理專業人員  
 
 ### 提高超過5%的的職業有哪些? 
 ```{r over5}
-#這是R Code Chunk
+df103106UP5 <- df103106[df103106$UniRate > 1.05,]
+knitr::kable(df103106UP5)
 ```
 
 ### 主要的職業種別是哪些種類呢?
 ```{r mainType}
-#這是R Code Chunk
+df103106UP5Num <- strsplit(df103106UP5$Career,"-") %>%
+  sapply("[",1)
+knitr::kable(table(df103106UP5Num))
 ```
 
 ## 男女同工不同酬現況分析
@@ -37,30 +58,133 @@ library(dplyr)
 
 ### 103到106年度的大學畢業薪資資料，哪些行業男生薪資比女生薪資多?
 ```{r male}
-#這是R Code Chunk
+# 103年度
+X103_Edu <- data.frame(Year = "103",
+                       Career = X103_EducationLevel$Career,
+                       `UniversityF/M` = X103_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X103_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X103_Edu$`UniversityF.M`))
+X103_EduRENA <- na.omit(X103_Edu)
+knitr::kable(head(arrange(X103_EduRENA,`UniversityF.M`),10))
+# 104年度
+X104_Edu <- data.frame(Year = "104",
+                       Career = X104_EducationLevel$Career,
+                       `UniversityF/M` = X104_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X104_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X104_Edu$`UniversityF.M`))
+X104_EduRENA <- na.omit(X104_Edu)
+knitr::kable(head(arrange(X104_EduRENA,`UniversityF.M`),10))
+# 105年度
+X105_Edu <- data.frame(Year = "105",
+                       Career = X105_EducationLevel$Career,
+                       `UniversityF/M` = X105_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X105_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X105_Edu$`UniversityF.M`))
+X105_EduRENA <- na.omit(X105_Edu)
+knitr::kable(head(arrange(X105_EduRENA,`UniversityF.M`),10))
+# 106年度
+X106_Edu <- data.frame(Year = "106",
+                       Career = X106_EducationLevel$Career,
+                       `UniversityF/M` = X106_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X106_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X106_Edu$`UniversityF.M`))
+X106_EduRENA <- na.omit(X106_Edu)
+knitr::kable(head(arrange(X106_EduRENA,`UniversityF.M`),10))
 ```
+
 ### 哪些行業女生薪資比男生薪資多? 
 ```{r female}
-#這是R Code Chunk
+# 103年度
+X103_Edu <- data.frame(Year = "103",
+                       Career = X103_EducationLevel$Career,
+                       `UniversityF/M` = X103_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X103_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X103_Edu$`UniversityF.M`))
+X103_EduRENA <- na.omit(X103_Edu)
+X103_EduG <- X103_EduRENA[X103_EduRENA$UniversityF.M > 100.00,]
+knitr::kable(head(arrange(X103_EduG,desc(`UniversityF.M`)),10))
+# 104年度
+X104_Edu <- data.frame(Year = "104",
+                       Career = X104_EducationLevel$Career,
+                       `UniversityF/M` = X104_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X104_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X104_Edu$`UniversityF.M`))
+X104_EduRENA <- na.omit(X104_Edu)
+X104_EduG <- X104_EduRENA[X104_EduRENA$UniversityF.M > 100.00,]
+knitr::kable(head(arrange(X104_EduG,desc(`UniversityF.M`)),10))
+# 105年度
+X105_Edu <- data.frame(Year = "105",
+                       Career = X105_EducationLevel$Career,
+                       `UniversityF/M` = X105_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X105_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X105_Edu$`UniversityF.M`))
+X105_EduRENA <- na.omit(X105_Edu)
+X105_EduG <- X105_EduRENA[X105_EduRENA$UniversityF.M > 100.00,]
+knitr::kable(head(arrange(X105_EduG,desc(`UniversityF.M`)),10))
+# 106年度
+X106_Edu <- data.frame(Year = "106",
+                       Career = X106_EducationLevel$Career,
+                       `UniversityF/M` = X106_EducationLevel$`UniversityF/M`,
+                       stringsAsFactors = F)
+X106_Edu$`UniversityF.M` <- as.numeric(gsub("—|…","",X106_Edu$`UniversityF.M`))
+X106_EduRENA <- na.omit(X106_Edu)
+X106_EduG <- X106_EduRENA[X106_EduRENA$UniversityF.M > 100.00,]
+knitr::kable(head(arrange(X106_EduG,desc(`UniversityF.M`)),10))
 ```
+
+- 結果說明：  
+由上面兩題可以看出大部分的行業在**相同的條件下的薪資大多還是男性多於女性**，四個年度中女性薪資大於男性幾乎可以說是微乎其微；  
+但可以發現106年度的差異已較103年小，在不論職業別的情況下，可以看見差異最大的大學畢業薪資男女比已從84.97上升至95.51(比例越大差異越小)。
 
 ## 研究所薪資差異
 
 以106年度的資料來看，哪個職業別念研究所最划算呢 (研究所學歷薪資與大學學歷薪資增加比例最多)?
  
 ```{r grad}
-#這是R Code Chunk
+df06UniIns <- data.frame(Career = X106_EducationLevel$Career,
+                         UniversitySalary = X106_EducationLevel$UniversitySalary,
+                         InstituteAndAboveSalary = X106_EducationLevel$InstituteAndAboveSalary,
+                         stringsAsFactors = F)
+
+df06UniIns$InstituteAndAboveSalary <- as.numeric(gsub("—","",df06UniIns$InstituteAndAboveSalary))
+df06UniIns$UniversitySalary <- as.numeric(gsub("—","",df06UniIns$UniversitySalary))
+
+df06UniIns$SalaryRate <- df06UniIns$InstituteAndAboveSalary/df06UniIns$UniversitySalary
+df06UniIns <- arrange(df06UniIns,desc(SalaryRate))
+knitr::kable(head(df06UniIns,10))
 ```
+
+- 結果說明：  
+從分析看來薪資增加比最大的職業為**礦業及土石採取業-事務支援人員，薪資增加比為1.208946**，所以最划算為此行業；  
+第二為**專業_科學及技術服務業**，薪資增加比為1.202982；  
+第三為**其他服務業-技術員及助理專業人員**，薪資增加比為1.199470。；
 
 ## 我有興趣的職業別薪資狀況分析
 
-### 有興趣的職業別篩選，呈現薪資
+### 有興趣的職業別篩選，呈現薪資  
+有興趣職業為：資訊及通訊傳播業-專業人員、資訊及通訊傳播業-技術員及助理專業人員、資訊及通訊傳播業-事務支援人員。
 ```{r like}
-#這是R Code Chunk
+myFav <- data.frame(Career = X106_EducationLevel$Career,
+                    UniversitySalary = X106_EducationLevel$UniversitySalary,
+                    InstituteSalary = X106_EducationLevel$InstituteAndAboveSalary,
+                    stringsAsFactors = F)
+
+myFav <- myFav[myFav$Career == c("資訊及通訊傳播業-專業人員", 
+                                 "資訊及通訊傳播業-技術員及助理專業人員", 
+                                 "資訊及通訊傳播業-事務支援人員"), ]
+knitr::kable(myFav)
 ```
+
+- 請問此薪資與妳想像中的一樣嗎?  
+從列表來看目前薪資看來跟所想出入並不大
 
 ### 這些職業別研究所薪資與大學薪資差多少呢？
 ```{r likeGrad}
-#這是R Code Chunk
+myFav$UniversitySalary <- as.numeric(myFav$UniversitySalary)
+myFav$InstituteSalary <- as.numeric(myFav$InstituteSalary)
+myFav$SalaryAdd <- myFav$InstituteSalary - myFav$UniversitySalary
+knitr::kable(myFav)
 ```
 
+- 會因為這樣改變心意，決定念/不念研究所嗎?  
+會，畢竟一個月相差快五千這樣累積下來其實一年就相差將近兩個月的薪資。

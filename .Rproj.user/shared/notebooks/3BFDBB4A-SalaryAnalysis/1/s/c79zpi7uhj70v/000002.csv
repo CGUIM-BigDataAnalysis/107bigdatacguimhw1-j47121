@@ -1,0 +1,15 @@
+"0","myFav2 <- data.frame(Career = X106_EducationLevel$Career== c(""資訊及通訊傳播業-專業人員"", 
+                                 ""資訊及通訊傳播業-技術員及助理專業人員"", 
+                                 ""資訊及通訊傳播業-事務支援人員""),
+                    UniversitySalary = X106_EducationLevel$UniversitySalary,
+                    InstituteSalary = X106_EducationLevel$InstituteAndAboveSalary,
+                    stringsAsFactors = F)
+"
+"2","longer object length is not a multiple of shorter object length"
+"2","Warning message:
+"
+"2","In strsplit(code, ""\n"", fixed = TRUE) :"
+"2","
+ "
+"2"," input string 1 is invalid in this locale
+"
